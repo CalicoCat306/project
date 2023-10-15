@@ -9,7 +9,7 @@ func test(t *testing.T, fileName string, num int, expected int) {
 	result := sum(num, fileName)
 	if result != expected {
 		t.Fatal(fmt.Sprintf(
-			"Sum of %s failed: got %d, expected %d\n", fileName, 3, expected))
+			"Sum of %s failed: got %d, expected %d\n", fileName, result, expected))
 	}
 }
 
