@@ -5,7 +5,6 @@ import (
 	"io"
 	"strconv"
 	"os"
-	"fmt"
 )
 
 // Sum numbers from channel `nums` and output sum to `out`.
