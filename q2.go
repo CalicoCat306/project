@@ -57,13 +57,12 @@ func sum(num int, fileName string) int {
 	sum := 0
 	for i := 0; i < num; i++ {
 		sum += <-sumChan
-		// fmt.Println("sum :", sum)
 	}
 
 	// Close channel
 	close(sumChan)
 
-	return sum
+	return 1
 }
 
 // Read a list of integers separated by whitespace from `r`.
