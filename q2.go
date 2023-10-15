@@ -41,7 +41,7 @@ func sum(num int, fileName string) int {
 
 	// Create buffered channel
 	
-
+	fmt.print(ints)
 	return 1
 }
 
