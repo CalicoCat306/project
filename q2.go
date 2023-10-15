@@ -12,6 +12,11 @@ import (
 func sumWorker(nums chan int, out chan int) {
 	// TODO: implement me
 	// HINT: use for loop over `nums`
+	sum := 0
+	for num := range nums{
+		sum += num
+	}
+	out <- sum
 }
 
 // Read integers from the file `fileName` and return sum of all values.
@@ -23,7 +28,32 @@ func sum(num int, fileName string) int {
 	// TODO: implement me
 	// HINT: use `readInts` and `sumWorkers`
 	// HINT: used buffered channels for splitting numbers between workers
-	return 0
+	file, err := os.Open(fileName)
+	checkError(err)
+	defer file.close()
+
+	nums := make(chan int)
+	out := make(chan int)
+
+	for i := 0; i < num; i++{
+		go sumWorker(nums,out)
+	}
+
+	go func(){
+		elems, err := readInts(file)
+		checkError(err)
+		for _, elem := range elems{
+			nums <- elem
+		}
+		close(nums)
+	}()
+
+	totalSum := 0
+	for i := 0; i < num; i++{
+		totalSum += <- out
+	}
+	
+	return totalSum
 }
 
 // Read a list of integers separated by whitespace from `r`.
