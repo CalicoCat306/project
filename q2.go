@@ -28,7 +28,43 @@ func sum(num int, fileName string) int {
 	// TODO: implement me
 	// HINT: use `readInts` and `sumWorkers`
 	// HINT: used buffered channels for splitting numbers between workers
-	return 0
+
+	// Open file
+	file, err := os.Open(fileName)
+	checkError(err)
+	defer file.Close()
+
+	// Read integers from file
+	ints, err := readInts(file)
+	checkError(err)
+
+	// Create buffered channel
+	intsBuffer := len(ints) / num  // Buffer size. 파이썬과 다르게 몫을 반환
+	sumChan := make(chan int, num) // 부분합들을 저장할 채널
+
+	// Create workers
+	for i := 0; i < num; i++ {
+		intsChan := make(chan int, intsBuffer)
+		for j := 0; j < intsBuffer; j++ {
+			intsChan <- ints[i*intsBuffer+j]
+		}
+		go sumWorker(intsChan, sumChan)
+
+		// Close channel
+		close(intsChan)
+	}
+
+	// Sum integers
+	sum := 0
+	for i := 0; i < num; i++ {
+		sum += <-sumChan
+		// fmt.Println("sum :", sum)
+	}
+
+	// Close channel
+	close(sumChan)
+
+	return sum
 }
 
 // Read a list of integers separated by whitespace from `r`.
