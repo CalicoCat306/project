@@ -2,7 +2,6 @@ package ds_hw_0
 
 import (
 	"bufio"
-	"io"
 	"strconv"
 	"os"
 	"sync"
