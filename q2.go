@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"io"
 	"strconv"
+	"os"
 )
 
 // Sum numbers from channel `nums` and output sum to `out`.
@@ -30,7 +31,7 @@ func sum(num int, fileName string) int {
 	// HINT: used buffered channels for splitting numbers between workers
 	file, err := os.Open(fileName)
 	checkError(err)
-	defer file.close()
+	defer file.Close()
 
 	nums := make(chan int)
 	out := make(chan int)
