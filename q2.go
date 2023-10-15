@@ -3,8 +3,8 @@ package ds_hw_0
 import (
 	"bufio"
 	"io"
-	"strconv"
 	"os"
+	"strconv"
 )
 
 // Sum numbers from channel `nums` and output sum to `out`.
@@ -13,11 +13,11 @@ import (
 func sumWorker(nums chan int, out chan int) {
 	// TODO: implement me
 	// HINT: use for loop over `nums`
-	sum := 0
-	for num := range nums{
-		sum += num
+	tempSum := 0
+	for num := range nums {
+		tempSum += num
 	}
-	out <- sum
+	out <- tempSum
 }
 
 // Read integers from the file `fileName` and return sum of all values.
@@ -29,32 +29,43 @@ func sum(num int, fileName string) int {
 	// TODO: implement me
 	// HINT: use `readInts` and `sumWorkers`
 	// HINT: used buffered channels for splitting numbers between workers
+
+	// Open file
 	file, err := os.Open(fileName)
 	checkError(err)
 	defer file.Close()
 
-	nums := make(chan int)
-	out := make(chan int)
+	// Read integers from file
+	ints, err := readInts(file)
+	checkError(err)
 
-	for i := 0; i < num; i++{
-		go sumWorker(nums,out)
-	}
+	// Create buffered channel
+	intsBuffer := len(ints) / num  // Buffer size. 파이썬과 다르게 몫을 반환
+	sumChan := make(chan int, num) // 부분합들을 저장할 채널
 
-	go func(){
-		elems, err := readInts(file)
-		checkError(err)
-		for _, elem := range elems{
-			nums <- elem
+	// Create workers
+	for i := 0; i < num; i++ {
+		intsChan := make(chan int, intsBuffer)
+		for j := 0; j < intsBuffer; j++ {
+			intsChan <- ints[i*intsBuffer+j]
 		}
-		close(nums)
-	}()
+		go sumWorker(intsChan, sumChan)
 
-	totalSum := 0
-	for i := 0; i < num; i++{
-		totalSum += <- out
+		// Close channel
+		close(intsChan)
 	}
-	
-	return totalSum
+
+	// Sum integers
+	sum := 0
+	for i := 0; i < num; i++ {
+		sum += <-sumChan
+		// fmt.Println("sum :", sum)
+	}
+
+	// Close channel
+	close(sumChan)
+
+	return sum
 }
 
 // Read a list of integers separated by whitespace from `r`.
