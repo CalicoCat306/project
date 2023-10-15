@@ -11,7 +11,7 @@ func test(t *testing.T, fileName string, num int, expected int) {
 		t.Fatal(fmt.Sprintf(
 			"Sum of %s failed: got %d, expected %d\n", fileName, result, expected))
 	} else {
-		fmt.Spritnf("Pass!")
+		fmt.Pritnln("Pass!")
 	}
 }
 
