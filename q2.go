@@ -5,16 +5,15 @@ import (
 	"io"
 	"strconv"
 	"os"
+	"sync"
 )
 
 // Sum numbers from channel `nums` and output sum to `out`.
 // You should only output to `out` once.
 // Do NOT modify function signature.
 func sumWorker(nums chan int, out chan int) {
-	// TODO: implement me
-	// HINT: use for loop over `nums`
 	sum := 0
-	for num := range nums{
+	for num := range nums {
 		sum += num
 	}
 	out <- sum
@@ -26,38 +25,46 @@ func sumWorker(nums chan int, out chan int) {
 // You should use `checkError` to handle potential errors.
 // Do NOT modify function signature.
 func sum(num int, fileName string) int {
-	// TODO: implement me
-	// HINT: use `readInts` and `sumWorkers`
-	// HINT: used buffered channels for splitting numbers between workers
-
-	// Open file
 	file, err := os.Open(fileName)
-	checkError(err)
+	if err != nil {
+		panic(err)
+	}
 	defer file.Close()
 
-	// Read integers from file
-	ints, err := readInts(file)
-	checkError(err)
+	var wg sync.WaitGroup
+	nums := make(chan int, num)
+	out := make(chan int)
 
-	ints = ints
+	// Launch 'num' sumWorker goroutines
+	for i := 0; i < num; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			sumWorker(nums, out)
+		}()
+	}
 
-	return 1
-}
-
-// Read a list of integers separated by whitespace from `r`.
-// Return the integers successfully read with no error, or
-// an empty slice of integers and the error that occurred.
-// Do NOT modify this function.
-func readInts(r io.Reader) ([]int, error) {
-	scanner := bufio.NewScanner(r)
+	// Read integers from the file and send them to the channel 'nums'
+	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanWords)
-	var elems []int
 	for scanner.Scan() {
 		val, err := strconv.Atoi(scanner.Text())
 		if err != nil {
-			return elems, err
+			panic(err)
 		}
-		elems = append(elems, val)
+		nums <- val
 	}
-	return elems, nil
+	close(nums)
+
+	go func() {
+		wg.Wait()
+		close(out)
+	}()
+
+	totalSum := 0
+	for partialSum := range out {
+		totalSum += partialSum
+	}
+
+	return totalSum
 }
