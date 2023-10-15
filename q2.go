@@ -42,7 +42,7 @@ func sum(num int, fileName string) int {
 
 	// Create buffered channel
 	
-	fmt.print(ints)
+	fmt.Fprint(ints)
 	return 1
 }
 
