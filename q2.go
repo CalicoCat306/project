@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"io"
 	"strconv"
+	"os"
 )
 
 // Sum numbers from channel `nums` and output sum to `out`.
