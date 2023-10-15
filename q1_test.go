@@ -23,6 +23,8 @@ func assertEqual(t *testing.T, answer, expected []WordCount) {
 			"Word counts did not match...\nExpected: %v\nActual: %v",
 			expected,
 			answer))
+	} else {
+		fmt.Println("Pass!!")
 	}
 }
 
