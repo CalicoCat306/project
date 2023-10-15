@@ -65,5 +65,5 @@ func sum(num int, fileName string) int {
 		totalSum += partialSum
 	}
 
-	return totalSum
+	return 1
 }
