@@ -24,7 +24,7 @@ func assertEqual(t *testing.T, answer, expected []WordCount) {
 			expected,
 			answer))
 	} else {
-		fmt.Println("Pass!!")
+		fmt.Sprintf("Expected and Actual : %v\nPass!", answer)
 	}
 }
 
