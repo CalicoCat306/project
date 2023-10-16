@@ -34,7 +34,6 @@ func sum(num int, fileName string) int {
 	nums := make(chan int, num)
 	out := make(chan int)
 
-	// Launch 'num' sumWorker goroutines
 	for i := 0; i < num; i++ {
 		wg.Add(1)
 		go func() {
@@ -43,7 +42,6 @@ func sum(num int, fileName string) int {
 		}()
 	}
 
-	// Read integers from the file and send them to the channel 'nums'
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanWords)
 	for scanner.Scan() {
